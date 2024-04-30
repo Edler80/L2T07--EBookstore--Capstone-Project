@@ -1,0 +1,2 @@
+ADMIN, Adm1n, admin
+ROSIE, Rosie22, clerk

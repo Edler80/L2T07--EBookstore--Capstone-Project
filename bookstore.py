@@ -620,236 +620,285 @@ for the book in TASK MENU (option 4).
 
     elif  mainmenu_s == 4:
         
-        while True:
-            """ Creat a search menu to give the user option how he would like
-            to search for the book"""
+            while True:
+                """ Creat a search menu to give the user option how he would like
+                to search for the book"""
 
-            print("\tSearch Menu")
+                print("\tSearch Menu")
 
-            menu_search = int(input('''Select one of the following options:
-                    1 - Search by Title
-                    2 - Search by Author
-                    3 - Search by ISBN
-                    0 - Return to Task Menu
-                        :  '''))
-            
-            # Open database called ebookstore_db
-            ebook = sqlite3.connect('ebookstore_db.db')
-            # Create a cursor object
-            cursor = ebook.cursor()
+                search_menu = int(input('''Select one of the following options:
+                            1 - Qty in Stock
+                            2 - Book information 
+                            3 - Selling Price
+                            0 - Return to Task Menu
+                                :  '''))
 
-            if menu_search == 1:
-                while True:
-                    title_search = (input('''Select one of the following options:
-                        SL  - Search by Starting Letter of Title
-                        FN  - Search by the Full Name of Title
-                        OW  - Search by the FIRST WORD in Title
-                        R   - Return to search menu
-                            :   ''')).upper()
+                    
+                if search_menu == 1:
+                    while True:
+
+                        sub_menu_search = int(input('''Select one of the following options:
+                            1 - Search by Title
+                            2 - Search by Author
+                            3 - Search by ISBN
+                            0 - Return to Search Menu
+                                :  '''))
+                        
+                        if sub_menu_search == 1:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_title = input('''Enter the full title name: \n
+                                                    ''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, qty, po_qty FROM book
+                                            WHERE title = '{full_name_title}' ''')
+                            qty_title_search = cursor.fetchall()
+                            
+                            print(qty_title_search)
+                            
+                            ebook.commit()
+                            ebook.close()
+
+                        elif sub_menu_search == 2:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_author = input('''Enter the full Author name: \n''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, qty, po_qty FROM book
+                                            WHERE author = '{full_name_author}' ''')
+                            qty_author_search = cursor.fetchall()
+                            
+                            print(qty_author_search)
+
+                            ebook.commit()
+                            ebook.close()
+                            
+        
+                        elif sub_menu_search == 3:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            isbn_number = input('''Please enter the isbn number 
+                            (Only numbers, no space): \n:''')
+
+                            cursor.execute(f'''SELECT b_id, title, author, qty, po_qty FROM book
+                                            WHERE isbn = '{isbn_number}' ''')
+                            qty_isbn_search = cursor.fetchall()
+                            
+                            print(qty_isbn_search)
+
+                            ebook.commit()
+                            ebook.close()
+                        
+                        elif sub_menu_search == 0:
+                            print("\nReturning to the Search Menu")
+                            break
+                        
+                        else:
+                            print('''\nYou have entered an invalid input. Only enter the 
+        number. Please try again.\n''')
+                            sub_menu_search = int(input('''Select one of the following options:
+                                1 - Search by Title
+                                2 - Search by Author
+                                3 - Search by ISBN
+                                0 - Return to Search Menu
+                                    :  '''))
+
+                elif search_menu == 2:
+                    while True:
+
+                        sub_menu_search = int(input('''Select one of the following options:
+                            1 - Search by Title
+                            2 - Search by Author
+                            3 - Search by ISBN
+                            0 - Return to Search Menu
+                                :  '''))
+                        
+                        if sub_menu_search == 1:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_title = input('''Enter the full title name: \n
+                                                    ''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, isbn FROM book
+                                            WHERE title = '{full_name_title}' ''')
+                            binfo_title_search = cursor.fetchall()
+                            
+                            print(binfo_title_search)
+                            
+                            ebook.commit()
+                            ebook.close()
+
+                        elif sub_menu_search == 2:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_author = input('''Enter the full Author name: \n''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, isbn FROM book
+                                            WHERE author = '{full_name_author}' ''')
+                            binfo_author_search = cursor.fetchall()
+                            
+                            print(binfo_author_search)
+
+                            ebook.commit()
+                            ebook.close()
+                            
+        
+                        elif sub_menu_search == 3:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            isbn_number = input('''Please enter the isbn number 
+                            (Only numbers, no space): \n:''')
+
+                            cursor.execute(f'''SELECT b_id, title, author, isbn FROM book
+                                            WHERE isbn = '{isbn_number}' ''')
+                            binfo_isbn_search = cursor.fetchall()
+                            
+                            print(binfo_isbn_search)
+
+                            ebook.commit()
+                            ebook.close()
+                        
+                        elif sub_menu_search == 0:
+                            print("\nReturning to the Search Menu")
+                            break
+                        
+                        else:
+                            print('''\nYou have entered an invalid input. Only enter the 
+        number. Please try again.\n''')
+                            sub_menu_search = int(input('''Select one of the following options:
+                                1 - Search by Title
+                                2 - Search by Author
+                                3 - Search by ISBN
+                                0 - Return to Search Menu
+                                    :  '''))
+
+
+                elif search_menu == 3:
+                    while True:
+
+                        sub_menu_search = int(input('''Select one of the following options:
+                            1 - Search by Title
+                            2 - Search by Author
+                            3 - Search by ISBN
+                            0 - Return to Search Menu
+                                :  '''))
+                        
+                        if sub_menu_search == 1:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_title = input('''Enter the full title name: \n
+                                                    ''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, sp FROM book
+                                            WHERE title = '{full_name_title}' ''')
+                            sp_title_search = cursor.fetchall()
+                            
+                            print(sp_title_search)
+                            
+                            ebook.commit()
+                            ebook.close()
+
+                        elif sub_menu_search == 2:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            full_name_author = input('''Enter the full Author name: \n''').upper()
+
+                            cursor.execute(f'''SELECT b_id, title, author, sp FROM book
+                                            WHERE author = '{full_name_author}' ''')
+                            sp_author_search = cursor.fetchall()
+                            
+                            print(sp_author_search)
+
+                            ebook.commit()
+                            ebook.close()
+                            
+        
+                        elif sub_menu_search == 3:
+                            # Open database called ebookstore_db
+                            ebook = sqlite3.connect('ebookstore_db.db')
+                            # Create a cursor object
+                            cursor = ebook.cursor()
+
+                            isbn_number = input('''Please enter the isbn number 
+                            (Only numbers, no space): \n:''')
+
+                            cursor.execute(f'''SELECT b_id, title, author, sp FROM book
+                                            WHERE isbn = '{isbn_number}' ''')
+                            sp_isbn_search = cursor.fetchall()
+                            
+                            print(sp_isbn_search)
+
+                            ebook.commit()
+                            ebook.close()
+                        
+                        elif sub_menu_search == 0:
+                            print("\nReturning to the Search Menu")
+                            break
+                        
+                        else:
+                            print('''\nYou have entered an invalid input. Only 
+        enter the number. Please try again.\n''')
+                            sub_menu_search = int(input('''Select one of the following options:
+                                1 - Search by Title
+                                2 - Search by Author
+                                3 - Search by ISBN
+                                0 - Return to Search Menu
+                                    :  '''))
+                    
                 
-                    if title_search == "SL":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
+                elif search_menu == 0:
+                    print("\nReturning to the Task Menu")
+                    break
 
-                        start_letter = input('''Enter first letter of the title: \n
-                                             ''').upper()
 
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE title LIKE '{}%'
-                                        ORDER BY b_id ASC;  '''.format(start_letter))
-                        book_title_search = cursor.fetchall()
+                else:
+                    print('''\nYou have entered an invalid input. Only enter the 
+        number. Please try again.''')
+                    search_menu = int(input('''Select one of the following options:
+                            1 - Qty in Stock
+                            2 - Book information 
+                            3 - Selling Price
+                            0 - Return to Task Menu
+                                :  '''))
                     
 
-                        print(book_title_search)              
+                    print('''\nYou have entered an invalid input. 
+                            Only enter the number. 
+                            Please try again.''')
+                    sub_menu_search = int(input('''Select one of the following options:
+                        1 - Search by Title
+                        2 - Search by Author
+                        3 - Search by ISBN
+                        0 - Return to Search Menu
+                            :  '''))
+        
 
-                    elif title_search == "FN":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        full_name_title = input('''Enter the full title name: \n
-                                                ''').upper()
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE title = '{}'
-                                        ORDER BY b_id ASC;  '''
-                                       .format(full_name_title))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-
-                        print(book_title_search)
-
-                    elif title_search == "OW":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        one_word = input('''Please enter one word of the title: \n
-                                         ''').upper()
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE title LIKE '{}%'
-                                        ORDER BY b_id ASC;  '''.format(one_word))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-                        
-                        print(book_title_search)
-                        
-                        
-                    elif title_search == "R":
-                        print("Returning to SEARCH MENU")
-                        break
-
-
-                    else:
-                        print("\nYou have enter invalid input.")
-                        print("Only enter (SL) or (FN) or (OW) or (R):\n")
-                        title_search = (input('''Select 1 of the following options:
-                        SL  - Search by Starting Letter of Title
-                        FN  - Search by the Full Name of Title
-                        OW  - Search by the FIRST WORD in Title
-                        R   - Return to search menu
-                            :   ''')).upper()
-
-            elif menu_search == 2:
-                while True:
-                    author_search = (input('''Select one of the following options:
-                        SL  - Search by Starting Letter of Author
-                        FN  - Search by the Full Name of Author
-                        OW  - Search by the FIRST Name of Author
-                        R   - Return to search menu
-                            :   ''')).upper()
-                
-                    if author_search == "SL":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        start_letter = input('''Enter start letter of the Author: \n
-                                             ''').upper()
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE author LIKE '{}%'
-                                        ORDER BY b_id ASC;  '''.format(start_letter))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-                    
-                        print(book_title_search)              
-
-
-                    elif author_search == "FN":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        full_name_author = input('''Enter the full Author name: \n
-                                                 ''').upper()
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE author = '{}'
-                                        ORDER BY b_id ASC;  '''
-                                       .format(full_name_author))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-
-                        print(book_title_search)
-
-                    elif author_search == "OW":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        one_word = input('''Please enter one Name of the Author: \n
-                                         ''').upper()
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE author LIKE '{}%'
-                                        ORDER BY b_id ASC;  '''.format(one_word))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-                        
-                        print(book_title_search)
-                        
-                        
-                    elif author_search == "R":
-                        print("Returning to SEARCH MENU")
-                        break
-
-
-                    else:
-                        print("\nYou have enter invalid input.")
-                        print("Only enter (SL) or (FN) or (OW) or (R):\n")
-                        Author_search = (input('''Select 1 of the following options:
-                        SL  - Search by Starting Letter of Author
-                        FN  - Search by the Full Name of Author
-                        OW  - Search by the FIRST Name of Author
-                        R   - Return to search menu
-                            :   ''')).upper()
-
-            elif menu_search == 3:
-                while True:
-                    isbn_search = input('''Select one of the following options:
-                        ISBN  - Search by ISBN number
-                        R   - Return to search menu
-                            :   ''').upper()
-                
-                
-                    if isbn_search == "ISBN":
-                        # Open database called ebookstore_db
-                        ebook = sqlite3.connect('ebookstore_db.db')
-                        # Create a cursor object
-                        cursor = ebook.cursor()
-
-                        isbn_number = input('''Please enter the isbn number 
-        (Only numbers, no space): \n:''')
-
-                        cursor.execute('''SELECT * FROM book
-                                        WHERE isbn = '{}';'''.format(isbn_number))
-                        book_title_search = cursor.fetchall()
-                        book_title_search = list(book_title_search)
-                    
-                        print(book_title_search)              
-
-
-                    elif isbn_search == "R":
-                        print("Returning to SEARCH MENU")
-                        break
-
-
-                    else:
-                        print("\nYou have enter invalid input.")
-                        print("Only enter (ISBN) or (R):\n")
-                        isbn_search = input('''Select one of the following options:
-                        ISBN    - Search by ISBN number
-                        R       - Return to search menu
-                            :   ''').upper()
-
-            elif menu_search == 0:
-                print("\nReturning to the Task Menu")
-                
-                break
-
-
-            else:
-                print('''\nYou have entered an invalid input. 
-                        Only enter the number. 
-                        Please try again.''')
-                menu_search = int(input('''Select one of the following options:
-                    1 - Search by Title
-                    2 - Search by Author
-                    3 - Search by ISBN
-                    0 - Return to Task Menu
-                        :  '''))
-                
-                
     elif mainmenu_s == 5:
+    
         while True:
             sales_pur_menu = int(input('''Select one of the following options:
                 1 - Sales Process

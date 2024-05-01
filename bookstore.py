@@ -18,6 +18,11 @@ copy below out to run code:
 * user_pass_c   : User Password Confirmation
 * b_id          : Bookstore ID
 * wo_qty        : Write off stock Qty 
+* ts_sp         : Total selling qty Selling price
+* ts_pp         : Total selling qty Purchase Price
+* ts_margin     : Total selling qty Margin 
+* ts_margin_per : Total selling qty Margin %
+
 """
 #----------------------------------------------------------------------------
 #=====importing libraries===========
@@ -46,17 +51,21 @@ cursor = ebook.cursor()
 # Check if the table exists if not create a table called book
 cursor.execute('''
     CREATE TABLE IF NOT EXISTS book(
-            b_id    INTEGER NOT NULL    UNIQUE,
-            title   CHAR    NOT NULL,
-            author  CHAR    NOT NULL,
-            isbn    VARCHAR NOT NULL    UNIQUE,
-            qty     INTEGER,
-            po_qty  INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-            sp      REAL,
-            pp      REAL,
-            s_qty   INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-            p_qty   INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-            wo_qty  INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            b_id            INTEGER NOT NULL    UNIQUE,
+            title           CHAR    NOT NULL,
+            author          CHAR    NOT NULL,
+            isbn            VARCHAR NOT NULL    UNIQUE,
+            qty             INTEGER,
+            po_qty          INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            sp              REAL,
+            pp              REAL,
+            s_qty           INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            p_qty           INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            wo_qty          INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            ts_sp           REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            ts_pp           REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            ts_margin       REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+            ts_margin_per   REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
             PRIMARY KEY(b_id))
 ''')
 
@@ -219,17 +228,21 @@ Please make sure you have all the details to enter the book.
                             # Check if the table exists if not create a table called book
                             cursor.execute('''
                                 CREATE TABLE IF NOT EXISTS book(
-                                        b_id    INTEGER NOT NULL    UNIQUE,
-                                        title   CHAR    NOT NULL,
-                                        author  CHAR    NOT NULL,
-                                        isbn    VARCHAR NOT NULL    UNIQUE,
-                                        qty     INTEGER,
-                                        po_qty  INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-                                        sp      REAL,
-                                        pp      REAL,
-                                        s_qty   INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-                                        p_qty   INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
-                                        wo_qty  INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        b_id            INTEGER NOT NULL    UNIQUE,
+                                        title           CHAR    NOT NULL,
+                                        author          CHAR    NOT NULL,
+                                        isbn            VARCHAR NOT NULL    UNIQUE,
+                                        qty             INTEGER,
+                                        po_qty          INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        sp              REAL,
+                                        pp              REAL,
+                                        s_qty           INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        p_qty           INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        wo_qty          INTEGER NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        ts_sp           REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        ts_pp           REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        ts_margin       REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
+                                        ts_margin_per   REAL NOT NULL ON CONFLICT REPLACE DEFAULT 0,
                                         PRIMARY KEY(b_id))      ''')
 
                             b_id1 = input("\nEnter the bookstore id for the book: \n")
@@ -270,7 +283,7 @@ Please make sure you have all the details to enter the book.
     elif mainmenu_s == 2:
         print('''\n\nOnly the following can be updated: Title, Author, ISBN & Qty.
               If You require to updat the Bookstore ID, this must be done in 
-              the Administration section. ''')
+              the Administration section. \n''')
         
         while True:
             # create a menu to update book details            
@@ -847,28 +860,76 @@ for the book in TASK MENU (option 4).
             
             if sales_pur_menu == 1:
 
+                b_id = input('''Enter the bookstore id: \n: ''')
+                s_qty1 = input('''Enter sales qty: \n: ''' )
+                sp2 = input('''Enter sales price for 1 book: \n:''')
+
                 # Create a new or open database called ebookstore_db
                 ebook = sqlite3.connect('ebookstore_db.db')
                 # Create a cursor object
-                cursor = ebook.cursor()
-
-                b_id = input('''Enter the bookstore id: \n: ''')
-                s_qty = input('''Enter sales qty: \n: ''' )
+                cursor = ebook.cursor()                
                                 
                 # creat update to increase sales qty                
                 cursor.execute('''UPDATE book SET s_qty = s_qty + ? 
-                                WHERE b_id = ?''', (s_qty, b_id))
-                print(f'''\nThe book with ID:{b_id} sales Qty increase:{s_qty}.  ''' )
+                                WHERE b_id = ?''', (s_qty1, b_id))
+                print(f'''\nThe book with ID:{b_id} sales Qty increase:{s_qty1}.  ''' )
 
                 ebook.commit()
 
                 # Create update to decrease stock due to sales
                 cursor.execute('''UPDATE book SET qty = qty - ? 
-                            WHERE b_id = ?''', (s_qty, b_id))
-                print(f'''\nThe book id {b_id} stock has decrease with {s_qty}''')
+                            WHERE b_id = ?''', (s_qty1, b_id))
+                print(f'''\nThe book id {b_id} stock has decrease with {s_qty1}''')
 
                 ebook.commit()
+
+                cursor.execute('''Update book SET sp = ?
+                               WHERE b_id = ?''', (sp2, b_id))
+                print(f'''\n Book Id {b_id} price update to {sp2}\n\n\n''')
+
+                ebook.commit()
+                
+                #Create update to calculate ts_sp, ts_pp, ts_margin and ts_margin_per
+                cursor.execute('''UPDATE book SET ts_sp = ts_sp + (? * ?)
+                               WHERE b_id = ?''', (s_qty1, sp2, b_id))
+                ebook.commit()
+
+                cursor.execute('''UPDATE book SET ts_pp = ts_pp + (? * pp)
+                               WHERE b_id = ?''', (s_qty1, b_id))
+                ebook.commit()
+                
+                margin_results1 = f'''SELECT ts_sp FROM book WHERE b_id = {b_id}'''
+                cursor.execute(margin_results1,)
+                margin_results1 = cursor.fetchone()[0]
+
+                margin_results2 = f'''SELECT ts_pp FROM book WHERE b_id = {b_id} '''
+                cursor.execute(margin_results2,)
+                margin_results2 = cursor.fetchone()[0]
+
+                margin_results = margin_results1 - margin_results2
+                ebook.commit()
+
+                cursor.execute(f'''UPDATE book SET ts_margin = ? 
+                               WHERE b_id = {b_id} ''', (margin_results,))
+                ebook.commit()
+
+                margin_perc1 = f'''SELECT ts_sp FROM book WHERE b_id = {b_id} '''
+                cursor.execute(margin_perc1,)
+                margin_perc1 = cursor.fetchone()[0]
+
+                margin_perc2 = f'''SELECT ts_margin FROM book WHERE b_id = {b_id} '''
+                cursor.execute(margin_perc2,)
+                margin_perc2 = cursor.fetchone()[0]
+
+                margin_perc = round(((margin_perc2 / margin_perc1) * 100), 2)
+                ebook.commit()
+
+                cursor.execute(f'''UPDATE book SET ts_margin_per = ? 
+                               WHERE b_id = {b_id} ''', (margin_perc,))
+                ebook.commit()
+
                 ebook.close()
+
 
             elif sales_pur_menu == 2:
                 # Create a new or open database called ebookstore_db
@@ -1003,7 +1064,7 @@ for the book in TASK MENU (option 4).
                         2 - Place a Purchase Orders
                         3 - Outstanding Purchase Orders Report
                         4 - Write off Report
-                        0 - Return to Task Menu
+                        0 - Exit
                             :  '''))
                     
                     if finance_menu == 1:
@@ -1013,10 +1074,11 @@ for the book in TASK MENU (option 4).
                         # Create a cursor object
                         cursor = ebook.cursor()
 
-                        cursor.execute('''SELECT b_id, title, s_qty, sp 
-                                        FROM book WHERE s_qty > 0
+                        cursor.execute('''SELECT b_id, title, s_qty, sp, ts_sp, 
+                                       ts_pp, ts_margin, ts_margin_per
+                                       FROM book WHERE s_qty > 0
                                         ORDER BY b_id ASC; ''')
-                        book = cursor.fetchall()
+                        book = cursor.fetchall()[:]
 
                         print(book)
 
@@ -1109,8 +1171,8 @@ for the book in TASK MENU (option 4).
                         ebook.close()
 
                     elif finance_menu == 0:
-                        print("\n\nReturning to Task Menu")
-                        break
+                        print("\n\nGoodbey\n")
+                        exit()
 
                     else:
                         print('''\nYou have entered an invalid input. 
